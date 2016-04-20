@@ -1,0 +1,55 @@
+#!/usr/bin/python
+'''
+General python information.
+
+Prints details of the python interpreter, the current PYTHONPATH,
+and the currently accessible modules.
+
+This should be used for development purposes only.
+Remember to chmod this out of world visibility when 
+you're done using it. 
+'''
+import platform, pkgutil, sys, os
+
+# Needs to happen before any other output
+print 'Content-Type: text/plain'
+print
+
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+STATIC_ROOT  = os.path.join(PROJECT_ROOT, 'static')
+CARTON_ROOT  = os.path.join(PROJECT_ROOT, 'carton')
+CONTROL_ROOT = os.path.join(PROJECT_ROOT, 'control')
+sys.path.append(CONTROL_ROOT)
+# Load any eggs that we require
+eggs = os.listdir(CARTON_ROOT)
+for egg in eggs:
+    if egg.endswith('.egg'):
+        sys.path.append(os.path.join(CARTON_ROOT, egg))
+                             
+print 
+print '    Python Information'
+print '-'*80
+print '    Version      :', platform.python_version()
+print '    Version tuple:', platform.python_version_tuple()
+print '    Compiler     :', platform.python_compiler()
+print '    Build        :', platform.python_build()
+print
+print '    Path         '
+print '-'*80   
+for i in sys.path:
+    print '   ', i
+print
+print '    Available Modules'
+print '-'*80
+m = [n for l,n,p in pkgutil.iter_modules(path=None, prefix='')]
+m.sort(key=lambda a: a.lower())
+longest = max((len(n) for n in m)) + 2
+cols = 4
+n = len(m)
+for i in range(0,n,cols):
+    val = '   '
+    for j in range(cols):
+        if i+j < n:
+            val = val + m[i+j] + (' '*(longest - len(m[i+j])))
+    print val
+    
